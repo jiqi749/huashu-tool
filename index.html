@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>话术优化 · 递归创新院</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+
+:root {
+  --cream: #faf6f0;
+  --warm: #fff9f3;
+  --ink: #2c2416;
+  --ink-light: #6b5d4a;
+  --ink-faint: #b8a898;
+  --accent: #c17f3a;
+  --accent-light: #e8c99a;
+  --accent-pale: #f5ead8;
+  --green: #4a7c5f;
+  --green-pale: #e8f2ec;
+  --red: #b84a3a;
+  --red-pale: #fdf0ee;
+  --border: #e8ddd0;
+  --shadow: rgba(44,36,22,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+.header {
+  background: var(--warm);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner { max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
+.header-logo {
+  width: 34px; height: 34px;
+  background: var(--accent);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.header-title { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 600; }
+.header-sub { font-size: 11px; color: var(--ink-faint); }
+.api-indicator {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+.api-indicator.connected { color: var(--green); border-color: rgba(74,124,95,0.3); background: var(--green-pale); }
+
+.nav {
+  background: var(--warm);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-inner { display: flex; max-width: 640px; margin: 0 auto; }
+.nav-btn {
+  flex: 1; min-width: 70px;
+  padding: 9px 6px 7px;
+  border: none; background: none;
+  color: var(--ink-faint);
+  font-family: 'Noto Sans SC', sans-serif; font-size: 11px;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.nav-btn .ni { font-size: 16px; }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+main { max-width: 640px; margin: 0 auto; padding: 16px 14px 48px; }
+.page { display: none; }
+.page.active { display: block; }
+
+.card {
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.sec-title {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sec-title::before {
+  content: ''; width: 3px; height: 12px;
+  background: var(--accent); border-radius: 2px; flex-shrink: 0;
+}
+
+textarea, input[type=text], input[type=password] {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--ink);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 14px; line-height: 1.7;
+  padding: 10px 12px;
+  outline: none; resize: none;
+  transition: border-color 0.2s;
+}
+textarea:focus, input:focus { border-color: var(--accent-light); }
+textarea::placeholder, input::placeholder { color: var(--ink-faint); }
+textarea { min-height: 90px; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.tag {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 11px;
+  font-size: 12px; color: var(--ink-light);
+  cursor: pointer; transition: all 0.15s;
+}
+.tag:hover, .tag.on { background: var(--accent-pale); border-color: var(--accent-light); color: var(--accent); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 9px 16px; border-radius: 9px; border: none;
+  font-family: 'Noto Sans SC', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.18s;
+}
+.btn-primary { background: var(--accent); color: #fff; width: 100%; margin-top: 10px; padding: 11px; font-size: 14px; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-copy { background: var(--green-pale); color: var(--green); border: 1px solid rgba(74,124,95,0.25); font-size: 12px; padding: 6px 14px; }
+.btn-copy.done { background: var(--green); color: #fff; }
+.btn-sm { background: var(--cream); border: 1px solid var(--border); color: var(--ink-faint); font-size: 12px; padding: 5px 10px; }
+
+.output-box {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: 9px; padding: 12px 14px;
+  font-size: 14px; line-height: 1.85; color: var(--ink);
+  white-space: pre-wrap; min-height: 50px;
+  position: relative;
+}
+.output-actions { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
+
+.review-box { border-radius: 9px; overflow: hidden; border: 1px solid var(--border); margin-top: 10px; }
+.review-header { background: var(--accent-pale); padding: 7px 12px; font-size: 11px; font-weight: 600; color: var(--accent); }
+.review-row { display: flex; gap: 10px; padding: 9px 12px; border-top: 1px solid var(--border); font-size: 13px; align-items: flex-start; }
+.review-lbl { color: var(--ink-faint); flex-shrink: 0; width: 36px; font-size: 12px; }
+.ok { color: var(--green); }
+.warn { color: var(--red); }
+
+/* 偏好学习 */
+.pref-item {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: 9px; padding: 12px; margin-bottom: 8px;
+}
+.pref-meta { font-size: 11px; color: var(--ink-faint); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.pref-rule { font-size: 13px; color: var(--ink); line-height: 1.6; }
+.pref-tag { background: var(--accent-pale); color: var(--accent); border-radius: 20px; padding: 2px 8px; font-size: 10px; }
+
+/* 模板 */
+.tpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.tpl-card {
+  background: var(--warm); border: 1px solid var(--border);
+  border-radius: 12px; padding: 11px 8px;
+  cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.tpl-card:hover, .tpl-card.on { border-color: var(--accent-light); background: var(--accent-pale); }
+.tpl-icon { font-size: 20px; margin-bottom: 4px; }
+.tpl-name { font-size: 12px; color: var(--ink-light); }
+.tpl-card.on .tpl-name { color: var(--accent); }
+
+/* 加载动画 */
+.loading { display: flex; align-items: center; gap: 8px; padding: 16px; color: var(--ink-faint); font-size: 13px; }
+.dots { display: flex; gap: 4px; }
+.dots span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); animation: pulse 1.2s infinite;
+}
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-5px);opacity:1} }
+
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.lbl { font-size: 12px; color: var(--ink-faint); margin-bottom: 6px; }
+.empty { text-align: center; padding: 30px; color: var(--ink-faint); font-size: 13px; }
+
+.toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: var(--ink); color: var(--cream);
+  padding: 8px 20px; border-radius: 20px; font-size: 13px;
+  z-index: 999; transition: transform 0.25s; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(44,36,22,0.4);
+  z-index: 200; display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--warm); border-radius: 18px 18px 0 0;
+  padding: 20px 16px 36px; width: 100%;
+  transform: translateY(100%); transition: transform 0.3s ease;
+}
+.modal-overlay.show .modal { transform: translateY(0); }
+.modal-title { font-family: 'Noto Serif SC', serif; font-size: 16px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">✍️</div>
+    <div>
+      <div class="header-title">话术优化</div>
+      <div class="header-sub">递归创新院运营助手</div>
+    </div>
+    <div class="api-indicator" id="apiIndicator" onclick="showApiModal()">⚙️ 设置Key</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showPage('optimize')" id="nav-optimize"><span class="ni">✨</span>AI优化</button>
+    <button class="nav-btn" onclick="showPage('template')" id="nav-template"><span class="ni">📋</span>话术模板</button>
+    <button class="nav-btn" onclick="showPage('review')" id="nav-review"><span class="ni">🔍</span>发前审查</button>
+    <button class="nav-btn" onclick="showPage('pref')" id="nav-pref"><span class="ni">🧠</span>偏好学习</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- 优化 -->
+<div class="page active" id="page-optimize">
+  <div class="card">
+    <div class="sec-title">场景</div>
+    <div class="tags" id="sceneTags">
+      <div class="tag on" onclick="selScene(this,'通用')">通用</div>
+      <div class="tag" onclick="selScene(this,'提醒拍照')">提醒拍照</div>
+      <div class="tag" onclick="selScene(this,'设备测试')">设备测试</div>
+      <div class="tag" onclick="selScene(this,'作业提醒')">作业提醒</div>
+      <div class="tag" onclick="selScene(this,'奖品颁发')">奖品颁发</div>
+      <div class="tag" onclick="selScene(this,'课程通知')">课程通知</div>
+      <div class="tag" onclick="selScene(this,'感谢回复')">感谢回复</div>
+      <div class="tag" onclick="selScene(this,'问题解释')">问题解释</div>
+    </div>
+    <div class="lbl">输入原始话术</div>
+    <textarea id="inputText" placeholder="把你想发的话粘贴进来，或者直接写…"></textarea>
+    <div class="lbl" style="margin-top:10px;">优化方向</div>
+    <div class="tags" id="styleTags">
+      <div class="tag on" onclick="togStyle(this,'温暖有礼')">温暖有礼</div>
+      <div class="tag" onclick="togStyle(this,'简短一点')">简短一点</div>
+      <div class="tag" onclick="togStyle(this,'软化语气')">软化语气</div>
+      <div class="tag" onclick="togStyle(this,'保留微信表情')">保留微信表情</div>
+    </div>
+    <button class="btn btn-primary" id="optimizeBtn" onclick="doOptimize()">✨ AI优化话术</button>
+  </div>
+
+  <div id="optimizeOut" style="display:none;">
+    <div class="card">
+      <div class="sec-title">优化结果</div>
+      <div class="output-box" id="optimizedText"></div>
+      <div class="output-actions">
+        <button class="btn btn-sm" onclick="clearOpt()">重置</button>
+        <button class="btn btn-copy" id="copyOptBtn" onclick="copyEl('optimizedText','copyOptBtn')">复制</button>
+      </div>
+      <div class="divider"></div>
+      <div class="sec-title">审查结果</div>
+      <div id="optimizeReview"></div>
+      <div class="divider"></div>
+      <div class="sec-title">老板修改了？记录下来</div>
+      <div class="lbl">老板的最终版本</div>
+      <textarea id="bossVersion" placeholder="把老板修改后的版本粘贴进来…" style="min-height:70px;"></textarea>
+      <button class="btn btn-primary" style="background:var(--green);" onclick="savePref()">🧠 保存为偏好规则</button>
+    </div>
+  </div>
+</div>
+
+<!-- 话术模板 -->
+<div class="page" id="page-template">
+  <div class="card">
+    <div class="sec-title">选择场景</div>
+    <div class="tpl-grid">
+      <div class="tpl-card on" onclick="selTpl(this,'attend')"><div class="tpl-icon">📊</div><div class="tpl-name">出勤统计</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'photo')"><div class="tpl-icon">📸</div><div class="tpl-name">拍照提醒</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'courseday')"><div class="tpl-icon">📚</div><div class="tpl-name">上课当天提醒</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'test')"><div class="tpl-icon">🔧</div><div class="tpl-name">设备测试</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'prize')"><div class="tpl-icon">🏆</div><div class="tpl-name">奖品颁奖照</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'hw')"><div class="tpl-icon">📝</div><div class="tpl-name">作业提醒</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'manual')"><div class="tpl-icon">📦</div><div class="tpl-name">手册分发</div></div>
+      <div class="tpl-card" onclick="selTpl(this,'review_')"><div class="tpl-icon">🎬</div><div class="tpl-name">课程回看</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="lbl">填写信息（选填，自动替换）</div>
+    <input type="text" id="tTeacher" placeholder="老师姓名，如：刘老师" style="margin-bottom:8px;" oninput="renderTpl()">
+    <input type="text" id="tSchool" placeholder="学校名称，如：中关村中学" oninput="renderTpl()">
+    <div class="divider"></div>
+    <div class="sec-title">话术内容</div>
+    <div class="output-box" id="tplContent" style="font-size:13px;"></div>
+    <div class="output-actions" style="margin-top:8px;">
+      <button class="btn btn-copy" id="copyTplBtn" onclick="copyEl('tplContent','copyTplBtn')">复制话术</button>
+    </div>
+  </div>
+</div>
+
+<!-- 发前审查 -->
+<div class="page" id="page-review">
+  <div class="card">
+    <div class="sec-title">粘贴准备发出的内容</div>
+    <textarea id="reviewInput" placeholder="把准备发出去的话粘贴进来…" style="min-height:120px;"></textarea>
+    <button class="btn btn-primary" id="reviewBtn" onclick="doReview()">🔍 AI审查</button>
+  </div>
+  <div id="reviewOut" style="display:none;">
+    <div class="card">
+      <div class="sec-title">审查结果</div>
+      <div id="reviewResult"></div>
+      <div class="divider"></div>
+      <div class="output-box" id="reviewText" style="font-size:13px;color:var(--ink-light);"></div>
+      <div class="output-actions">
+        <button class="btn btn-copy" id="copyRevBtn" onclick="copyEl('reviewText','copyRevBtn')">复制</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 偏好学习 -->
+<div class="page" id="page-pref">
+  <div class="card">
+    <div class="sec-title">已积累的偏好规则</div>
+    <div style="font-size:12px;color:var(--ink-faint);margin-bottom:10px;">每次保存老板修改，AI优化时会自动参考这些规则</div>
+    <div id="prefList"></div>
+    <div id="prefEmpty" class="empty" style="display:none;">还没有偏好规则<br>在「AI优化」页面保存老板修改来积累</div>
+  </div>
+  <div class="card">
+    <div class="sec-title">手动添加规则</div>
+    <div class="lbl">规则描述</div>
+    <textarea id="manualRule" placeholder="例如：奖品通知类，先解释原因，再说结果，最后明确下一步动作" style="min-height:70px;"></textarea>
+    <div class="lbl" style="margin-top:8px;">适用场景（选填）</div>
+    <input type="text" id="manualScene" placeholder="例如：奖品颁发、感谢回复">
+    <button class="btn btn-primary" onclick="addManualRule()">添加规则</button>
+  </div>
+</div>
+
+</main>
+
+<!-- API Modal -->
+<div class="modal-overlay" id="apiModal" onclick="hideApiModal(event)">
+  <div class="modal">
+    <div class="modal-title">🔑 设置 API Key</div>
+    <div class="lbl">通义千问 API Key（sk-开头）</div>
+    <input type="password" id="apiKeyInput" placeholder="sk-xxxxxxxxxxxxxxxx" style="margin-bottom:12px;">
+    <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
+    <div style="font-size:11px;color:var(--ink-faint);margin-top:10px;line-height:1.6;">
+      Key仅存储在本地浏览器，不会上传到任何服务器。<br>
+      建议定期在阿里云后台轮换Key。
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 状态 =====
+let currentScene = '通用';
+let currentStyles = new Set(['温暖有礼']);
+let currentTpl = 'attend';
+let apiKey = localStorage.getItem('qwen_api_key') || 'sk-40155f4d4799442c857b075de98be103';
+let preferences = JSON.parse(localStorage.getItem('boss_prefs') || '[]');
+let lastInput = '';
+let lastOutput = '';
+
+// 初始化
+updateApiIndicator();
+renderTpl();
+renderPrefList();
+
+// ===== API =====
+function updateApiIndicator() {
+  const el = document.getElementById('apiIndicator');
+  if (apiKey) {
+    el.textContent = '✓ AI已连接';
+    el.className = 'api-indicator connected';
+  } else {
+    el.textContent = '⚙️ 设置Key';
+    el.className = 'api-indicator';
+  }
+}
+
+function showApiModal() {
+  document.getElementById('apiKeyInput').value = apiKey || '';
+  document.getElementById('apiModal').classList.add('show');
+}
+function hideApiModal(e) {
+  if (e.target === document.getElementById('apiModal')) document.getElementById('apiModal').classList.remove('show');
+}
+function saveApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val) { showToast('请输入API Key'); return; }
+  apiKey = val;
+  localStorage.setItem('qwen_api_key', val);
+  updateApiIndicator();
+  document.getElementById('apiModal').classList.remove('show');
+  showToast('API Key 已保存');
+}
+
+// ===== 调用通义千问 =====
+async function callQwen(prompt) {
+  if (!apiKey) { showToast('请先设置API Key'); return null; }
+  const resp = await fetch('https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'qwen-turbo',
+      input: { messages: [{ role: 'user', content: prompt }] },
+      parameters: { result_format: 'message', temperature: 0.7 }
+    })
+  });
+  const data = await resp.json();
+  if (data.output?.choices?.[0]?.message?.content) {
+    return data.output.choices[0].message.content;
+  }
+  throw new Error(data.message || '调用失败');
+}
+
+// ===== 构建优化Prompt =====
+function buildOptimizePrompt(text) {
+  const styles = [...currentStyles].join('、');
+  const prefRules = preferences.length > 0
+    ? '\n\n【老板偏好规则，必须遵守】\n' + preferences.map((p, i) => `${i+1}. ${p.rule}`).join('\n')
+    : '';
+
+  return `你是递归创新院的话术优化助手。请优化以下微信消息，使其更适合发给学校老师或企业对接人。
+
+【优化要求】
+- 场景：${currentScene}
+- 风格：${styles}
+- 语气：温暖有礼，像对待重要合作伙伴一样尊重
+- 表情：使用微信文字表情如[玫瑰][爱心][拥抱][庆祝]，不要用emoji
+- 结构：先交代背景/原因，再说事情，最后明确下一步动作
+- 长度：简洁，不啰嗦${prefRules}
+
+【原始话术】
+${text}
+
+请直接输出优化后的话术，不要加任何解释或前缀。`;
+}
+
+// ===== 构建审查Prompt =====
+function buildReviewPrompt(text) {
+  return `你是递归创新院的话术审查助手。请审查以下微信消息，从三个维度给出简短评估：
+
+【审查维度】
+1. 文字：有无错别字、重复词、标点错误
+2. 流程：格式是否完整，有无遗漏关键信息
+3. 调性：语气是否温暖有礼，是否适合发给学校老师/企业对接人
+
+【消息内容】
+${text}
+
+请用以下JSON格式回复（只输出JSON，不要其他内容）：
+{"文字":{"状态":"ok或warn","说明":"简短说明"},"流程":{"状态":"ok或warn","说明":"简短说明"},"调性":{"状态":"ok或warn","说明":"简短说明"},"总结":"一句话总结是否可以发送"}`;
+}
+
+// ===== 优化 =====
+async function doOptimize() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) { showToast('请先输入话术'); return; }
+  if (!apiKey) { showApiModal(); return; }
+
+  const btn = document.getElementById('optimizeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> AI优化中…';
+
+  document.getElementById('optimizeOut').style.display = 'block';
+  document.getElementById('optimizedText').innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div>正在优化…</div>';
+  document.getElementById('optimizeReview').innerHTML = '';
+
+  try {
+    lastInput = text;
+    const result = await callQwen(buildOptimizePrompt(text));
+    lastOutput = result;
+    document.getElementById('optimizedText').textContent = result;
+
+    // 审查
+    const reviewResult = await callQwen(buildReviewPrompt(result));
+    renderReview(reviewResult, 'optimizeReview');
+
+    document.getElementById('optimizeOut').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) {
+    document.getElementById('optimizedText').textContent = '调用失败：' + e.message;
+    showToast('API调用失败，请检查Key');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '✨ AI优化话术';
+}
+
+// ===== 审查 =====
+async function doReview() {
+  const text = document.getElementById('reviewInput').value.trim();
+  if (!text) { showToast('请先输入内容'); return; }
+  if (!apiKey) { showApiModal(); return; }
+
+  const btn = document.getElementById('reviewBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> 审查中…';
+
+  document.getElementById('reviewOut').style.display = 'block';
+  document.getElementById('reviewResult').innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div>审查中…</div>';
+  document.getElementById('reviewText').textContent = text;
+
+  try {
+    const result = await callQwen(buildReviewPrompt(text));
+    renderReview(result, 'reviewResult');
+    document.getElementById('reviewOut').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) {
+    document.getElementById('reviewResult').innerHTML = '<div style="padding:12px;color:var(--red)">审查失败：' + e.message + '</div>';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🔍 AI审查';
+}
+
+function renderReview(jsonStr, targetId) {
+  try {
+    const clean = jsonStr.replace(/```json|```/g, '').trim();
+    const data = JSON.parse(clean);
+    const dims = ['文字', '流程', '调性'];
+    let html = `<div class="review-box"><div class="review-header">审查报告 · ${data.总结 || ''}</div>`;
+    dims.forEach(d => {
+      if (data[d]) {
+        html += `<div class="review-row">
+          <span class="review-lbl">${d}</span>
+          <span class="${data[d].状态 === 'ok' ? 'ok' : 'warn'}">
+            ${data[d].状态 === 'ok' ? '✓' : '⚠️'} ${data[d].说明}
+          </span>
+        </div>`;
+      }
+    });
+    html += '</div>';
+    document.getElementById(targetId).innerHTML = html;
+  } catch(e) {
+    document.getElementById(targetId).innerHTML = `<div class="review-box"><div class="review-header">审查结果</div><div class="review-row"><span class="review-lbl">结果</span><span>${jsonStr}</span></div></div>`;
+  }
+}
+
+// ===== 偏好学习 =====
+async function savePref() {
+  const bossText = document.getElementById('bossVersion').value.trim();
+  if (!bossText || !lastInput) { showToast('请先填写老板的版本'); return; }
+  if (!apiKey) { showApiModal(); return; }
+
+  showToast('AI正在分析差异…');
+
+  const prompt = `分析以下两个版本话术的核心差别，总结出一条可以指导未来优化的规则。
+
+【我的版本】
+${lastOutput}
+
+【老板的版本】
+${bossText}
+
+请用一句话总结规则，格式：[场景类型]：[具体规则]。只输出规则本身，不要其他内容。`;
+
+  try {
+    const rule = await callQwen(prompt);
+    const pref = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('zh-CN'),
+      scene: currentScene,
+      original: lastOutput,
+      boss: bossText,
+      rule: rule.trim()
+    };
+    preferences.unshift(pref);
+    localStorage.setItem('boss_prefs', JSON.stringify(preferences));
+    renderPrefList();
+    document.getElementById('bossVersion').value = '';
+    showToast('偏好规则已保存，AI下次优化会参考');
+  } catch(e) {
+    showToast('分析失败：' + e.message);
+  }
+}
+
+function addManualRule() {
+  const rule = document.getElementById('manualRule').value.trim();
+  if (!rule) { showToast('请输入规则描述'); return; }
+  const scene = document.getElementById('manualScene').value.trim();
+  const pref = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('zh-CN'),
+    scene: scene || '通用',
+    rule: rule
+  };
+  preferences.unshift(pref);
+  localStorage.setItem('boss_prefs', JSON.stringify(preferences));
+  renderPrefList();
+  document.getElementById('manualRule').value = '';
+  document.getElementById('manualScene').value = '';
+  showToast('规则已添加');
+}
+
+function deletePref(id) {
+  preferences = preferences.filter(p => p.id !== id);
+  localStorage.setItem('boss_prefs', JSON.stringify(preferences));
+  renderPrefList();
+}
+
+function renderPrefList() {
+  const list = document.getElementById('prefList');
+  const empty = document.getElementById('prefEmpty');
+  if (!preferences.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = preferences.map(p => `
+    <div class="pref-item">
+      <div class="pref-meta">
+        <span>${p.date} · <span class="pref-tag">${p.scene}</span></span>
+        <button onclick="deletePref(${p.id})" style="background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:13px;">✕</button>
+      </div>
+      <div class="pref-rule">${p.rule}</div>
+    </div>
+  `).join('');
+}
+
+// ===== 模板 =====
+const TPLS = {
+  attend: (t,s) => `💡 各位老师上午好@所有人
+
+本周的哲科创新通识课将于今天下午准时开始～
+
+为更好地统计学生到课情况，辛苦老师们回复以下信息：
+1、【准时到达】请回复"准时"或"收到"
+2、【晚点到】请告知晚到多久+原因
+3、【请假】请简略说明原因
+
+大家有任何问题可以随时联系我～辛苦老师们[拥抱][拥抱]`,
+
+  photo: (t,s) => `📸 ${t||'X老师'}您好呀～
+
+课程照片拍完之后可以直接发到本群哈！
+
+照片要求：
+① 同学们拿着《学生手册》的大合影
+② 自教室后方的全景上课照片
+③ 学生听课特写照片
+④ 学生与老师互动问答照片
+
+每类1-2张即可，期待同学们的精彩照片～辛苦您啦[玫瑰]`,
+
+  courseday: (t,s) => `📕 ${t||'X老师'}您好呀～
+
+温馨提醒今天课程的准备内容哈
+
+1. 课前分发《哲科创新通识课·学生手册》，每人1份
+   课后分发【思维导图单页】，每人1份
+   ⚠️ 导图单页一定课后再发
+
+2. 有任何问题都可以在群里联系@方老师
+
+辛苦老师们哈～[拥抱][拥抱]`,
+
+  test: (t,s) => `📺 ${t||'X老师'}您好呀，请问今天下午16:30有时间吗～我们帮咱们测试一下设备哈[拥抱][拥抱]
+
+或者周一至周五9:30-18:00这个时间段中，您方便的其他时间也都可以哈～
+
+设备测试需要辛苦负责老师前往课程教室，在教室大屏下载安装好Classin软件，登录上老师的classin账号；点击进入测试课程，我们会有专门的老师为咱们测试设备效果、网速互动、音响、麦克风等[玫瑰]`,
+
+  prize: (t,s) => `📚 老师们上午好[玫瑰][拥抱]
+
+上节课的【课堂互动奖品】已全部寄送到学校
+
+辛苦收到奖品的老师们@所有人
+在课前颁发给学生，并请【拍照留念📸】及时发给我哈[玫瑰]
+
+[庆祝]发到本群或发给方老师都可以哈～
+（学生手持奖品放在胸前拍摄效果最佳）
+
+我们会为学校定制表彰海报返还给大家[嘿哈]
+感谢老师们的支持[爱心]`,
+
+  hw: (t,s) => `🎓 各位老师们好@所有人
+
+作业反馈是提升学习效果的重要方式
+辛苦老师们课后叮嘱学生积极提交作业
+每份作业我们都会认真查阅并评选创新思辨奖为班级积分～
+
+提交路径：扫描手册背面二维码→关注递归创新院公众号→点击底部【哲科通识】→完成【课后思考】
+
+感谢老师们的支持[爱心]`,
+
+  manual: (t,s) => `📙 老师们好呀
+
+给${s?`【${s}】`:'咱们学校'}邮寄的学生手册已发出～
+这是对应的手册清单，请大家查收[拥抱]
+
+收到后辛苦老师按照清单中的各班数量将手册分发给负责老师～
+建议各班负责老师在【哲科当天课前】分发给学生们，建议不要过早发哈
+
+第一课的思维导图也随手册邮寄到学校，请按各班数量分发给老师，并请老师们将【导图单页一定课后再发】给同学们哈～
+
+感谢老师们的支持[爱心]`,
+
+  review_: (t,s) => `[庆祝] ${t||'X老师'}您好～
+
+如果学校有安排需要请假，后期可以给咱们安排回看哈～
+回看也是班级统一坐在教室里进行哈，周内9:30-18:00这个时间都是可以的，到时候咱们确定好回看时间跟我说就好，我们来建回看课[爱心][爱心]`
+};
+
+function selTpl(el, key) {
+  currentTpl = key;
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  renderTpl();
+}
+
+function renderTpl() {
+  const t = document.getElementById('tTeacher')?.value.trim() || '';
+  const s = document.getElementById('tSchool')?.value.trim() || '';
+  const fn = TPLS[currentTpl];
+  if (fn) document.getElementById('tplContent').textContent = fn(t, s);
+}
+
+// ===== 场景/风格 =====
+function selScene(el, scene) {
+  document.querySelectorAll('#sceneTags .tag').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  currentScene = scene;
+}
+
+function togStyle(el, style) {
+  if (currentStyles.has(style)) { currentStyles.delete(style); el.classList.remove('on'); }
+  else { currentStyles.add(style); el.classList.add('on'); }
+}
+
+// ===== 工具 =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+function copyEl(elId, btnId) {
+  const text = document.getElementById(elId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId);
+    const orig = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('done');
+    showToast('已复制');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 2000);
+  });
+}
+
+function clearOpt() {
+  document.getElementById('inputText').value = '';
+  document.getElementById('optimizeOut').style.display = 'none';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
