@@ -379,15 +379,10 @@ textarea { min-height: 90px; }
 let currentScene = '通用';
 let currentStyles = new Set(['温暖有礼']);
 let currentTpl = 'attend';
-let apiKey = localStorage.getItem('qwen_api_key') || '';
+let apiKey = localStorage.getItem('qwen_api_key') || 'sk-40155f4d4799442c857b075de98be103';
 let preferences = JSON.parse(localStorage.getItem('boss_prefs') || '[]');
 let lastInput = '';
 let lastOutput = '';
-
-// 初始化
-updateApiIndicator();
-renderTpl();
-renderPrefList();
 
 // ===== API =====
 function updateApiIndicator() {
@@ -785,6 +780,10 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
+// ===== 初始化（必须在所有函数定义之后）=====
+updateApiIndicator();
+renderTpl();
+renderPrefList();
 </script>
 </body>
 </html>
