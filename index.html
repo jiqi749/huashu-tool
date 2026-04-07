@@ -424,15 +424,15 @@ async function callQwen(prompt) {
     },
     body: JSON.stringify({
       model: 'qwen-turbo',
-      input: { messages: [{ role: 'user', content: prompt }] },
-      parameters: { result_format: 'message', temperature: 0.7 }
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7
     })
   });
   const data = await resp.json();
-  if (data.output?.choices?.[0]?.message?.content) {
-    return data.output.choices[0].message.content;
+  if (data.choices?.[0]?.message?.content) {
+    return data.choices[0].message.content;
   }
-  throw new Error(data.message || '调用失败');
+  throw new Error(data.error?.message || '调用失败');
 }
 
 // ===== 构建优化Prompt =====
