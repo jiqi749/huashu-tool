@@ -416,7 +416,7 @@ function saveApiKey() {
 // ===== 调用通义千问 =====
 async function callQwen(prompt) {
   if (!apiKey) { showToast('请先设置API Key'); return null; }
-  const resp = await fetch('https://huashu-proxy.avaqi0822.workers.dev', {
+  const resp = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
